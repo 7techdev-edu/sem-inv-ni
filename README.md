@@ -83,4 +83,4 @@ Organización educativa: [github.com/7techdev-edu](https://github.com/7techdev-e
 
 ---
 
-*Última actualización: Mayo 2025*
+*Última actualización: Mayo 2026*
