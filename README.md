@@ -1,4 +1,4 @@
-# 📊 Seminario de Investigación en Negocios Internacionales
+# 📊 Investigación en Negocios Internacionales
 > Repositorio de prompts y scripts orientado al análisis de nichos de exportación.  
 > Organización: [7techdev-edu](https://github.com/7techdev-edu)
 
