@@ -337,3 +337,80 @@ Ajusta el siguiente trozo de código en consecuencia, da por hecho que las libre
 
 [PY.CODE.4.5]
 ```
+
+### 4.8.3. Ajuste para datos faltantes o sin datos históricos (No calcula CAGR)
+
+```
+# TABLA 1: Market Share por año y país
+print("📊 TABLA 1: MARKET SHARE POR AÑO (%)")
+print("="*60)
+pivot_share = market_evolution_top.pivot(index='year', columns='partner_country', values='market_share')
+pivot_share_rounded = pivot_share.round(1)
+print(pivot_share_rounded.to_string())
+
+# TABLA 2: Valores de comercio (Millones USD)
+print("\n\n💰 TABLA 2: VALORES DE COMERCIO (Millones USD)")
+print("="*60)
+pivot_value = market_evolution_top.pivot(index='year', columns='partner_country', values='trade_value_usd')
+pivot_value_millions = (pivot_value / 1000).round(1)  # Convertir a millones
+print(pivot_value_millions.to_string())
+
+# TABLA 3: Crecimiento anual por país
+# El cálculo del CAGR requiere al menos dos años de datos. Como solo se tiene un año (2024),
+# esta tabla no se puede generar con los datos actuales.
+# print("\n\n📈 TABLA 3: CRECIMIENTO ANUAL COMPUESTO (CAGR %)")
+# print("="*60)
+# growth_data = market_evolution_top.groupby('partner_country').apply(
+#     lambda x: ((x['trade_value_usd']. iloc[-1] / x['trade_value_usd'].iloc[0]) ** (1/(len(x)-1)) - 1) * 100
+# ).reset_index(name='cagr')
+# growth_summary = growth_data.set_index('partner_country')['cagr'].round(1).sort_values(ascending=False)
+# print(growth_summary.to_string())
+print("\n\n📈 TABLA 3: CRECIMIENTO ANUAL COMPUESTO (CAGR %)")
+print("="*60)
+print("No se puede calcular el CAGR. Se requiere al menos dos años de datos para este cálculo.")
+
+# TABLA 4: Ranking por año
+print("\n\n🏆 TABLA 4: RANKING DE PAÍSES POR AÑO (Top 5)")
+print("="*60)
+for year in sorted(df['year'].unique()):
+    year_data = market_evolution_top[market_evolution_top['year'] == year].nlargest(5, 'market_share')
+    print(f"\n{year}:")
+    for i, (_, row) in enumerate(year_data.iterrows(), 1):
+        print(f"  {i}. {row['partner_country']}: {row['market_share']:.1f}% ({row['trade_value_usd']/1000:.0f}M USD)")
+```
+
+### 4.8.4. Ajuste para datos faltantes (Calcula CAGR omitiendo datos vacíos o nulos)
+
+```
+# TABLA 1: Market Share por año y país
+print("📊 TABLA 1: MARKET SHARE POR AÑO (%)")
+print("="*60)
+pivot_share = market_evolution_top.pivot(index='year', columns='partner_country', values='market_share')
+pivot_share_rounded = pivot_share.round(1)
+print(pivot_share_rounded.to_string())
+
+# TABLA 2: Valores de comercio (Millones USD)
+print("\n\n💰 TABLA 2: VALORES DE COMERCIO (Millones USD)")
+print("="*60)
+pivot_value = market_evolution_top.pivot(index='year', columns='partner_country', values='trade_value_usd')
+pivot_value_millions = (pivot_value / 1000).round(1)  # Convertir a millones
+print(pivot_value_millions.to_string())
+
+# TABLA 3: Crecimiento anual por país
+print("\n\n📈 TABLA 3: CRECIMIENTO ANUAL COMPUESTO (CAGR %)")
+print("="*60)
+growth_data = market_evolution_top.groupby('partner_country').apply(
+    lambda x: ((x['trade_value_usd'].iloc[-1] / x['trade_value_usd'].iloc[0]) ** (1/(len(x)-1)) - 1) * 100 if len(x) > 1 else np.nan
+).reset_index(name='cagr')
+growth_summary = growth_data.set_index('partner_country')['cagr'].round(1).sort_values(ascending=False)
+print(growth_summary.to_string())
+
+# TABLA 4: Ranking por año
+print("\n\n🏆 TABLA 4: RANKING DE PAÍSES POR AÑO (Top 5)")
+print("="*60)
+for year in sorted(df['year'].unique()):
+    year_data = market_evolution_top[market_evolution_top['year'] == year].nlargest(5, 'market_share')
+    print(f"\n{year}:")
+    for i, (_, row) in enumerate(year_data.iterrows(), 1):
+        print(f"  {i}. {row['partner_country']}: {row['market_share']:.1f}% ({row['trade_value_usd']/1000:.0f}M USD)")
+```
